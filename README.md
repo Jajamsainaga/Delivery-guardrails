@@ -1,146 +1,113 @@
-# Delivery Guardrails
+# AWS Secure EKS Platform
 
-Policy-driven CI/CD guardrails for Kubernetes and Terraform using GitHub Actions, OPA/Conftest, Trivy, Gitleaks, Helm, and a local Kind deployment workflow.
+This project demonstrates how **Fortune 100 and large enterprise organizations**
+design and operate a **secure, scalable AWS Kubernetes (EKS) platform**
+using Infrastructure as Code, CI/CD automation, security guardrails,
+observability, and cost controls.
 
-This repo is built to be **demo-ready**: one command to deploy locally, and a CI pipeline that **fails fast** on risky changes.
-
----
-
-## What this does
-
-### Guardrails enforced
-- **Secrets scanning**: blocks committed secrets (Gitleaks)
-- **Container vulnerability scanning**: fails on HIGH/CRITICAL (Trivy)
-- **Terraform scanning**: flags insecure IaC patterns (Checkov)
-- **Policy-as-Code**: blocks non-compliant Kubernetes/Terraform changes (OPA via Conftest)
-- **Repeatable local deploy**: Helm → Kind → health checks
-
-### Why it exists
-Teams move fast. Guardrails make sure speed doesn’t turn into security incidents, unstable releases, or bad infrastructure decisions.
+This is a **platform engineering project**, not a tool demo.
 
 ---
 
-## Tech stack
-- GitHub Actions (CI)
-- OPA / Conftest (policy checks)
-- Trivy (image vulnerability scan)
-- Gitleaks (secret scanning)
-- Checkov (Terraform scanning)
-- Docker + Helm + Kind (local deploy)
+## What this project demonstrates
+
+- Enterprise-grade AWS infrastructure built using **Terraform (IaC)**
+- Secure **Kubernetes platform on Amazon EKS**
+- **CI/CD pipelines using GitHub Actions**
+- IAM and security guardrails aligned with least-privilege principles
+- Cost optimization strategies used in large organizations
+- Monitoring and observability using Prometheus and Grafana
+- Operational readiness through runbooks and incident workflows
+
+---
+
+## Why this project exists
+
+Most DevOps projects show individual tools.
+
+This project shows how **real enterprise platform teams**:
+- Own production infrastructure
+- Enforce delivery standards
+- Reduce deployment risk
+- Control cloud costs
+- Meet security and compliance requirements
+- Enable teams to deploy safely and frequently
+
+This mirrors how Fortune 100 companies build internal
+DevOps and platform engineering systems.
+
+---
+
+## High-level architecture
+
+The platform is designed using layered architecture:
+
+- **Networking Layer**
+  - AWS VPC with public and private subnets
+  - Secure routing and isolation
+
+- **Compute & Orchestration Layer**
+  - Amazon EKS with managed node groups
+  - Kubernetes namespaces per environment
+
+- **Infrastructure as Code Layer**
+  - Terraform modules for repeatable and auditable provisioning
+
+- **CI/CD Layer**
+  - GitHub Actions pipelines for build, test, security scan, and deployment
+
+- **Observability Layer**
+  - Centralized metrics, dashboards, and logging
 
 ---
 
 ## Repository structure
 
-
+aws-secure-eks-platform/
+├── README.md
+├── architecture/ # Architecture diagrams and design decisions
+├── terraform/ # Terraform modules and environment definitions
+├── kubernetes/ # Helm charts and Kubernetes manifests
+├── ci-cd/ # GitHub Actions workflows
+├── observability/ # Monitoring and logging setup
+├── security/ # IAM and security guardrails
+├── scripts/ # Automation scripts
+└── docs/ # Runbooks and operational docs
 
 
 ---
 
-## Prerequisites (local)
-Install these locally:
-- Docker
-- kind
-- kubectl
-- helm
-- make
-- curl
+## Security approach
 
-> If you don’t want to install scanners locally, this repo includes a Docker-based local CI runner.
+Security is treated as a first-class concern:
+- Least-privilege IAM roles and policies
+- Secure defaults for networking and access
+- Automated security scanning in CI/CD pipelines
+- Clear separation of environments (dev / prod)
 
 ---
 
-## Quick start (local deployment)
+## Cost optimization approach
 
-### 1) Build image
-```bash
-make build
+Cost control is built into the platform:
+- Resource right-sizing
+- Storage lifecycle policies
+- Autoscaling for compute resources
+- Avoidance of idle infrastructure
 
-make kind-up
+---
 
-make deploy
+## Intended audience
 
-make port-forward
-make test
+- Recruiters and hiring managers
+- Platform and DevOps engineers
+- Cloud engineers working in regulated environments
 
-{"status":"ok","uptime_s":3}
+---
 
-chmod +x scripts/ci-local.sh
-./scripts/ci-local.sh
+## Disclaimer
 
-### What it runs:
-
-Gitleaks (secrets)
-
-Docker build
-
-Trivy (HIGH/CRITICAL)
-
-Helm template render
-
-Conftest policy checks on rendered YAML
-
-Checkov scan on Terraform ###
-
-### GitHub Actions CI
-
-CI runs on:
-
-Pull Requests
-
-Push to main
-
-Pipeline includes:
-
-Secrets scan (Gitleaks)
-
-Build image
-
-Trivy image scan (HIGH/CRITICAL fail)
-
-Render Helm → policy checks (Conftest + OPA)
-
-Terraform scan (Checkov) ###
-
-
-### Policies (OPA) included
-Kubernetes policies
-
-Located in policy/k8s/:
-
-deny-root: requires runAsNonRoot=true
-
-require-limits: requires CPU + memory limits
-
-deny-loadbalancer: blocks Service.type=LoadBalancer
-
-Terraform policies
-
-Located in policy/terraform/:
-
-s3-baseline: expects encryption + versioning resources included in the plan/module ###
-
-
-./scripts/ci-local.sh
-
-echo "AWS_SECRET_ACCESS_KEY=FAKEFAKEFAKE" > test.env
-git add test.env
-
-
-default = "delivery-guardrails-artifacts-<unique>"
-
-kind load docker-image sentinelops:local --name sentinelops
-
-docker images | grep sentinelops
-
-docker images | grep sentinelops
-
-kubectl get pods
-kubectl describe pod <pod>
-kubectl get events --sort-by=.metadata.creationTimestamp | tail -n 20
-
-kubectl get svc sentinelops
-kubectl get endpoints sentinelops
-
-
+This project is for demonstration and learning purposes.
+It reflects real-world enterprise patterns without exposing
+any proprietary or sensitive configurations.
 
